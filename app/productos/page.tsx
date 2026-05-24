@@ -3,18 +3,32 @@ import { productos } from "@/lib/mocks/products";
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/src/components/products/product-card";
 import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ProductosPage() {
-  const [currentPage, setCurrentPage] = useState(1);
+  
 
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [category, setCategory] = useState("Todas");
+  const [search, setSearch] = useState(searchParams.get("q") || "");
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || Number(1));
+  const [category, setCategory] = useState(searchParams.get("category") || "Todas");
 
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
 
   const productsPerPage = 12;
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("q", search);
+    if (category !== "Todas") params.set("category", category);
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    params.set("page", currentPage.toString());
+    router.replace(`?${params.toString()}`);
+  }, [search, category, minPrice, maxPrice, currentPage]);
 
   const debouncedSearch = useDebounce(search, 300);
   useEffect(() => {
