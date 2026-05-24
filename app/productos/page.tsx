@@ -9,17 +9,29 @@ export default function ProductosPage() {
 
   const [search, setSearch] = useState("");
 
+  const [category, setCategory] = useState("Todas");
+
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
   const productsPerPage = 12;
 
+  const debouncedSearch = useDebounce(search, 300);
   useEffect(() => {
     setCurrentPage(1);
-  }, [search]);
-
-  const debouncedSearch = useDebounce(search, 300);
-
-  const filteredProducts = productos.filter((product) =>
-    product.nombre.toLowerCase().includes(debouncedSearch.toLowerCase()),
-  );
+  }, [debouncedSearch, category]);
+  const filteredProducts = productos.filter((product) => {
+    const matchesMinPrice =
+      minPrice === "" || product.precio >= parseInt(minPrice);
+    const matchesMaxPrice =
+      maxPrice === "" || product.precio <= parseInt(maxPrice);
+    const matchesSearch = product.nombre
+      .toLowerCase()
+      .includes(debouncedSearch.toLowerCase());
+    const matchesCategory =
+      category === "Todas" || product.categoria === category;
+    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
+  });
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
@@ -39,6 +51,39 @@ export default function ProductosPage() {
         onChange={(e) => setSearch(e.target.value)}
         className="w-full mb-6 p-2 border rounded"
       />
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="w-full mb-6 p-2 border rounded"
+      >
+        <option value="Todas">Todas las categorías</option>
+        <option value="electrónica">Electrónica</option>
+        <option value="ropa">Ropa</option>
+        <option value="hogar">Hogar</option>
+        <option value="deportes">Deportes</option>
+        <option value="libros">Libros</option>
+      </select>
+      <div className="flex gap-4 mb-6">
+        <input
+          type="number"
+            placeholder="Precio mínimo"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+          <input
+            type="number"
+            placeholder="Precio máximo"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+      </div>
+      {Number(minPrice) > Number(maxPrice) && (
+        <p className="text-red-500 mb-4">
+          El precio mínimo no puede ser mayor que el precio máximo.
+        </p>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {currentProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
