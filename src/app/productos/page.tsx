@@ -64,14 +64,19 @@ function ProductosContent() {
       .includes(debouncedSearch.toLowerCase());
     const matchesCategory =
       category === "Todas" || product.categoria === category;
+    
     return (
       matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice
     );
   });
-
+const clearFilters = () => {
+      setSearch(""); setCategory("Todas"); setMinPrice(""); setMaxPrice(""); setCurrentPage(1); router.push("/productos");
+    };
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const startIndex = (currentPage - 1) * productsPerPage;
+
+  const hasNoResults = filteredProducts.length === 0;
 
   const currentProducts = filteredProducts.slice(
     startIndex,
@@ -155,11 +160,34 @@ function ProductosContent() {
           El precio mínimo no puede ser mayor que el precio máximo.
         </p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {currentProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      <button
+        onClick={clearFilters}
+        className="mb-6 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+      >
+        Limpiar filtros
+      </button>
+      {hasNoResults ? (
+  <p
+    role="status"
+    className="
+      text-zinc-400
+      text-center
+      py-10
+      text-lg
+    "
+  >
+    No se encontraron productos.
+  </p>
+) : (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {currentProducts.map((product) => (
+      <ProductCard
+        key={product.id}
+        product={product}
+      />
+    ))}
+  </div>
+)}
       <div className="flex items-center mt-8">
         <button
           aria-label="Página anterior"
