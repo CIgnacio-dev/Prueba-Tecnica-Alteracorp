@@ -1,15 +1,25 @@
 import { notFound } from "next/navigation";
 import { productos } from "@/lib/mocks/products";
+import  Link  from "next/link";
+
+
 
 type ProductPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    from?: string;
+    url?: string;
+  }>;
 };
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const {id} = await params;
+  
   const product = productos.find((p) => p.id === id);
+  const {from} = await searchParams;
+
 
   if (!product) {
     notFound();
@@ -17,6 +27,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="p-6">
+      <Link href={from || "/productos"} className="text-blue-500 hover:underline mb-4 inline-block">
+        &larr; Volver a productos
+      </Link>
       <img src={product.imagen} alt={`Imagen de ${product.nombre}`} className="w-full h-64 object-cover rounded-lg mb-4" />
       <h1 className="text-3xl font-bold mb-2">{product.nombre}</h1>
       <p className="text-gray-600 mb-4">{product.descripcion}</p>

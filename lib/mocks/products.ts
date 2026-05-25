@@ -15,6 +15,6 @@ export const productos: Producto[] = Array.from({ length: 50 }, (_, index) => ({
     descripcion: `Descripción del producto ${index + 1}`,
     categoria: categorias[index % categorias.length],
     precio: (index + 1) * 1000,
-    stock: Math.floor(Math.random() * 100) + 1,
+    stock: index % 15,
     imagen: "/placeholder.png"
 }));

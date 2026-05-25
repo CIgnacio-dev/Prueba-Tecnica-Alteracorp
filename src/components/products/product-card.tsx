@@ -1,5 +1,6 @@
 import { Producto } from "@/src/types/products";
 import  Link  from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type ProductCardProps = {
   product: Producto;
@@ -8,8 +9,15 @@ type ProductCardProps = {
 export function ProductCard({
   product,
 }: ProductCardProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = `/${pathname.replace(/^\/+/, "")}${
+  searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : ""
+}`;
   return (
-   <Link href={`/productos/${product.id}`} className="block p-4 border rounded-lg hover:shadow-lg transition-shadow">
+   <Link href={`/productos/${product.id}?from=${encodeURIComponent(currentUrl)}`} className="block p-4 border rounded-lg hover:shadow-lg transition-shadow">
       <img
         src={product.imagen}
         alt={`Imagen de ${product.nombre}`}
@@ -32,6 +40,19 @@ export function ProductCard({
           currency: "CLP",
         }).format(product.precio)}
       </p>
+      {product.stock <= 0 ? (
+  <p className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-800 text-sm rounded">
+    Agotado
+  </p>
+) : product.stock <= 5 ? (
+  <p className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-sm rounded">
+    Pocas unidades
+  </p>
+) : (
+  <p className="inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 text-sm rounded">
+    En Stock
+  </p>
+)}
     </Link>
   );
 }
