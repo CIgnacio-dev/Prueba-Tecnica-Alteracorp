@@ -46,7 +46,7 @@ function ProductosContent() {
     if (maxPrice) params.set("maxPrice", maxPrice);
     params.set("page", currentPage.toString());
     try {
-      router.replace(`?${params.toString()}`);
+      router.replace(`/productos?${params.toString()}`);
     } catch (error) {
       // Router not ready
     }
