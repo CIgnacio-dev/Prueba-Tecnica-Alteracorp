@@ -67,6 +67,10 @@ function ProductosContent() {
   return (
     <main className="p-6">
       <h1 className="text-3xl font-bold mb-4">Catálogo de Productos</h1>
+      <label htmlFor="search" className="block font-semibold mb-2">
+        Buscar por nombre:
+      </label>  
+      
       <input
         type="text"
         placeholder="Buscar productos..."
@@ -74,6 +78,10 @@ function ProductosContent() {
         onChange={(e) => setSearch(e.target.value)}
         className="w-full mb-6 p-2 border rounded"
       />
+      <label htmlFor="category" className="block font-semibold mb-2">
+        Filtrar por categoría:
+      </label>
+      
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
@@ -86,7 +94,11 @@ function ProductosContent() {
         <option value="deportes">Deportes</option>
         <option value="libros">Libros</option>
       </select>
+      <label htmlFor="price" className="block font-semibold mb-2">
+        Filtrar por precio:
+      </label>
       <div className="flex gap-4 mb-6">
+        
         <input
           type="number"
             placeholder="Precio mínimo"
@@ -114,11 +126,12 @@ function ProductosContent() {
       </div>
       <div className="flex items-center mt-8">
         <button
+        aria-label="Página anterior"
           onClick={() =>
             setCurrentPage((prev: number) => Math.max(prev - 1, 1))
           }
           disabled={currentPage === 1}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Anterior
         </button>
@@ -126,11 +139,13 @@ function ProductosContent() {
           Página {currentPage} de {totalPages}
         </span>
         <button
+        aria-label="Página siguiente"
+        
           onClick={() =>
             setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))
           }
-          disabled={currentPage === totalPages}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
+          disabled= {currentPage === totalPages}
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Siguiente
         </button>
