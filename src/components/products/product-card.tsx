@@ -1,4 +1,5 @@
 import { Producto } from "@/src/types/products";
+import  Link  from "next/link";
 
 type ProductCardProps = {
   product: Producto;
@@ -8,7 +9,7 @@ export function ProductCard({
   product,
 }: ProductCardProps) {
   return (
-    <div className="border rounded-xl p-4">
+   <Link href={`/productos/${product.id}`} className="block p-4 border rounded-lg hover:shadow-lg transition-shadow">
       <img
         src={product.imagen}
         alt={`Imagen de ${product.nombre}`}
@@ -31,6 +32,6 @@ export function ProductCard({
           currency: "CLP",
         }).format(product.precio)}
       </p>
-    </div>
+    </Link>
   );
 }

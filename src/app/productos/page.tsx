@@ -1,15 +1,14 @@
 "use client";
 import { productos } from "@/lib/mocks/products";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { ProductCard } from "@/src/components/products/product-card";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ProductosPage() {
-  
-
+function ProductosContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isMounted = useRef(false);
 
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || Number(1));
@@ -21,14 +20,24 @@ export default function ProductosPage() {
   const productsPerPage = 12;
 
   useEffect(() => {
+    isMounted.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted.current) return;
+    
     const params = new URLSearchParams();
     if (search) params.set("q", search);
     if (category !== "Todas") params.set("category", category);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
     params.set("page", currentPage.toString());
-    router.replace(`?${params.toString()}`);
-  }, [search, category, minPrice, maxPrice, currentPage]);
+    try {
+      router.replace(`?${params.toString()}`);
+    } catch (error) {
+      // Router not ready
+    }
+  }, [search, category, minPrice, maxPrice, currentPage, router]);
 
   const debouncedSearch = useDebounce(search, 300);
   useEffect(() => {
@@ -127,5 +136,13 @@ export default function ProductosPage() {
         </button>
       </div>
     </main>
+  );
+}
+
+export default function ProductosPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Cargando...</div>}>
+      <ProductosContent />
+    </Suspense>
   );
 }
