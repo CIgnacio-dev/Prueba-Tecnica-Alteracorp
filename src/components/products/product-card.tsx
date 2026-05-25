@@ -51,7 +51,11 @@ export function ProductCard({
   <p className="inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 text-sm rounded">
     En Stock
   </p>
+  
 )}
+<button disabled={product.stock <= 0} className={`mt-4 w-full py-2 px-4 rounded hover:scale-[1.02] ${product.stock <= 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`}>
+    {product.stock <= 0 ? "No disponible" : "Agregar al carrito"}
+  </button>
     </Link>
   );
 }

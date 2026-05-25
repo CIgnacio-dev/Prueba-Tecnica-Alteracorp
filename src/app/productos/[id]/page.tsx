@@ -48,5 +48,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         <p>
             <span className="font-semibold">Stock disponible:</span> {product.stock} unidades
         </p>
+        <button disabled={product.stock <= 0} className={`mt-4 w-50 py-2 px-4 rounded hover:scale-[1.02] ${product.stock <= 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`}>
+    {product.stock <= 0 ? "No disponible" : "Agregar al carrito"}
+  </button>
     </main>
   )};

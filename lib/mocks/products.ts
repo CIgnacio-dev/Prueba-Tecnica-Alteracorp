@@ -1,4 +1,5 @@
 import { Producto } from "../../src/types/products";
+import { v4 as uuid } from "uuid";
 
 const categorias = [
     "electrónica",
@@ -9,8 +10,8 @@ const categorias = [
 ] as const;
 
 export const productos: Producto[] = Array.from({ length: 50 }, (_, index) => ({
-    id: String(index + 1),
-    sku: `SKU-${index + 1}`,
+    id: crypto.randomUUID(),
+    sku: `PRD-${String(index + 1).padStart(5, "0")}`,
     nombre: `Producto ${index + 1}`,
     descripcion: `Descripción del producto ${index + 1}`,
     categoria: categorias[index % categorias.length],
