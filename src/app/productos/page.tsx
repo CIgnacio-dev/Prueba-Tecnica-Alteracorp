@@ -27,6 +27,8 @@ function ProductosContent() {
 
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+  const hasPriceError =
+    minPrice && maxPrice && Number(minPrice) > Number(maxPrice);
 
   const productsPerPage = 12;
 
@@ -55,8 +57,10 @@ function ProductosContent() {
     setCurrentPage(1);
   }, [debouncedSearch, category]);
   const filteredProducts = productos.filter((product) => {
-    const matchesMinPrice =
-      minPrice === "" || product.precio >= parseInt(minPrice);
+    const matchesPrice = hasPriceError
+      ? true
+      : (!minPrice || product.precio >= Number(minPrice)) &&
+        (!maxPrice || product.precio <= Number(maxPrice));
     const matchesMaxPrice =
       maxPrice === "" || product.precio <= parseInt(maxPrice);
     const matchesSearch = product.nombre
@@ -64,14 +68,17 @@ function ProductosContent() {
       .includes(debouncedSearch.toLowerCase());
     const matchesCategory =
       category === "Todas" || product.categoria === category;
-    
-    return (
-      matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice
-    );
+
+    return matchesSearch && matchesCategory && matchesPrice;
   });
-const clearFilters = () => {
-      setSearch(""); setCategory("Todas"); setMinPrice(""); setMaxPrice(""); setCurrentPage(1); router.push("/productos");
-    };
+  const clearFilters = () => {
+    setSearch("");
+    setCategory("Todas");
+    setMinPrice("");
+    setMaxPrice("");
+    setCurrentPage(1);
+    router.push("/productos");
+  };
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const startIndex = (currentPage - 1) * productsPerPage;
@@ -83,9 +90,7 @@ const clearFilters = () => {
     startIndex + productsPerPage,
   );
   return (
-    <main
-      className="bg-gradient-to-r from-gray-700 via-gray-900 to-black p-6 min-h-screen text-white"
-    >
+    <main className="bg-gradient-to-r from-gray-700 via-gray-900 to-black p-6 min-h-screen text-white">
       <h1 className="text-3xl font-bold mb-4">Catálogo de Productos</h1>
       <label htmlFor="search" className="block font-semibold mb-2">
         Buscar por nombre:
@@ -102,40 +107,37 @@ const clearFilters = () => {
         Filtrar por categoría:
       </label>
 
-      <Select
-  value={category}
-  onValueChange={setCategory}
->
-  <SelectTrigger className="w-75 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white p-2 border rounded mb-4">
-    <SelectValue placeholder="Categoría" />
-  </SelectTrigger>
+      <Select value={category} onValueChange={setCategory}>
+        <SelectTrigger className="w-75 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white p-2 border rounded mb-4">
+          <SelectValue placeholder="Categoría" />
+        </SelectTrigger>
 
-  <SelectContent className="w-full bg-gradient-to-r from-gray-700 via-gray-900 to-black  text-white">
-    <SelectItem value="Todas" className="focus:bg-zinc-700">
-      Todas las categorías
-    </SelectItem>
+        <SelectContent className="w-full bg-gradient-to-r from-gray-700 via-gray-900 to-black  text-white">
+          <SelectItem value="Todas" className="focus:bg-zinc-700">
+            Todas las categorías
+          </SelectItem>
 
-    <SelectItem value="electrónica" className="focus:bg-zinc-700">
-      Electrónica
-    </SelectItem>
+          <SelectItem value="electrónica" className="focus:bg-zinc-700">
+            Electrónica
+          </SelectItem>
 
-    <SelectItem value="ropa" className="focus:bg-zinc-700">
-      Ropa
-    </SelectItem>
+          <SelectItem value="ropa" className="focus:bg-zinc-700">
+            Ropa
+          </SelectItem>
 
-    <SelectItem value="hogar" className="focus:bg-zinc-700">
-      Hogar
-    </SelectItem>
+          <SelectItem value="hogar" className="focus:bg-zinc-700">
+            Hogar
+          </SelectItem>
 
-    <SelectItem value="deportes" className="focus:bg-zinc-700">
-      Deportes
-    </SelectItem>
+          <SelectItem value="deportes" className="focus:bg-zinc-700">
+            Deportes
+          </SelectItem>
 
-    <SelectItem value="libros" className="focus:bg-zinc-700">
-      Libros
-    </SelectItem>
-  </SelectContent>
-</Select>
+          <SelectItem value="libros" className="focus:bg-zinc-700">
+            Libros
+          </SelectItem>
+        </SelectContent>
+      </Select>
       <label htmlFor="price" className="block font-semibold mb-2">
         Filtrar por precio:
       </label>
@@ -155,9 +157,16 @@ const clearFilters = () => {
           className="w-full p-2 border rounded"
         />
       </div>
-      {Number(minPrice) > Number(maxPrice) && (
-        <p className="text-red-500 mb-4">
-          El precio mínimo no puede ser mayor que el precio máximo.
+      {hasPriceError && (
+        <p
+          role="alert"
+          className="
+      text-red-400
+      text-sm
+      mt-2
+    "
+        >
+          El precio mínimo no puede ser mayor al máximo.
         </p>
       )}
       <button
@@ -167,27 +176,24 @@ const clearFilters = () => {
         Limpiar filtros
       </button>
       {hasNoResults ? (
-  <p
-    role="status"
-    className="
+        <p
+          role="status"
+          className="
       text-zinc-400
       text-center
       py-10
       text-lg
     "
-  >
-    No se encontraron productos.
-  </p>
-) : (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    {currentProducts.map((product) => (
-      <ProductCard
-        key={product.id}
-        product={product}
-      />
-    ))}
-  </div>
-)}
+        >
+          No se encontraron productos.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {currentProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
       <div className="flex items-center mt-8">
         <button
           aria-label="Página anterior"
