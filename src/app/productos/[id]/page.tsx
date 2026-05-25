@@ -15,10 +15,13 @@ type ProductPageProps = {
 };
 
 export default async function ProductPage({ params, searchParams }: ProductPageProps) {
-  const {id} = await params;
-  
+  const paramsSearch = await searchParams;
+  const { id } = await params;
   const product = productos.find((p) => p.id === id);
-  const {from} = await searchParams;
+  const from =
+  typeof paramsSearch.from === "string"
+    ? paramsSearch.from
+    : "/productos";
 
 
   if (!product) {
