@@ -1,6 +1,7 @@
 import { Producto } from "@/src/types/products";
 import  Link  from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type ProductCardProps = {
   product: Producto;
@@ -11,6 +12,12 @@ export function ProductCard({
 }: ProductCardProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [added, setAdded] = useState(false);
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  }
   const currentUrl = `/${pathname.replace(/^\/+/, "")}${
   searchParams.toString()
     ? `?${searchParams.toString()}`
@@ -53,9 +60,30 @@ export function ProductCard({
   </p>
   
 )}
-<button disabled={product.stock <= 0} className={`mt-4 w-full py-2 px-4 rounded hover:scale-[1.02] ${product.stock <= 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`}>
-    {product.stock <= 0 ? "No disponible" : "Agregar al carrito"}
-  </button>
+<button
+  onClick={handleAddToCart}
+  disabled={product.stock === 0}
+  className="
+    w-full
+    mt-4
+    py-2
+    rounded-xl
+    font-medium
+    transition-colors
+    disabled:bg-zinc-700
+    disabled:text-zinc-400
+    disabled:cursor-not-allowed
+    bg-blue-600
+    hover:bg-blue-700
+    text-white
+  "
+>
+  {product.stock === 0
+    ? "Sin stock"
+    : added
+      ? "Agregado ✓"
+      : "Agregar al carrito"}
+</button>
     </Link>
   );
 }
