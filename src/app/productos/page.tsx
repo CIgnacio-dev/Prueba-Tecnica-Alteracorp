@@ -4,6 +4,13 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { ProductCard } from "@/src/components/products/product-card";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function ProductosContent() {
   const router = useRouter();
@@ -11,8 +18,12 @@ function ProductosContent() {
   const isMounted = useRef(false);
 
   const [search, setSearch] = useState(searchParams.get("q") || "");
-  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || Number(1));
-  const [category, setCategory] = useState(searchParams.get("category") || "Todas");
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || Number(1),
+  );
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "Todas",
+  );
 
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
@@ -25,7 +36,7 @@ function ProductosContent() {
 
   useEffect(() => {
     if (!isMounted.current) return;
-    
+
     const params = new URLSearchParams();
     if (search) params.set("q", search);
     if (category !== "Todas") params.set("category", category);
@@ -53,7 +64,9 @@ function ProductosContent() {
       .includes(debouncedSearch.toLowerCase());
     const matchesCategory =
       category === "Todas" || product.categoria === category;
-    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
+    return (
+      matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice
+    );
   });
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -65,12 +78,14 @@ function ProductosContent() {
     startIndex + productsPerPage,
   );
   return (
-    <main className="p-6">
+    <main
+      className="bg-gradient-to-r from-gray-700 via-gray-900 to-black p-6 min-h-screen text-white"
+    >
       <h1 className="text-3xl font-bold mb-4">Catálogo de Productos</h1>
       <label htmlFor="search" className="block font-semibold mb-2">
         Buscar por nombre:
-      </label>  
-      
+      </label>
+
       <input
         type="text"
         placeholder="Buscar productos..."
@@ -81,38 +96,59 @@ function ProductosContent() {
       <label htmlFor="category" className="block font-semibold mb-2">
         Filtrar por categoría:
       </label>
-      
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="w-full mb-6 p-2 border rounded"
-      >
-        <option value="Todas">Todas las categorías</option>
-        <option value="electrónica">Electrónica</option>
-        <option value="ropa">Ropa</option>
-        <option value="hogar">Hogar</option>
-        <option value="deportes">Deportes</option>
-        <option value="libros">Libros</option>
-      </select>
+
+      <Select
+  value={category}
+  onValueChange={setCategory}
+>
+  <SelectTrigger className="w-75 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white p-2 border rounded mb-4">
+    <SelectValue placeholder="Categoría" />
+  </SelectTrigger>
+
+  <SelectContent className="w-full bg-gradient-to-r from-gray-700 via-gray-900 to-black  text-white">
+    <SelectItem value="Todas" className="focus:bg-zinc-700">
+      Todas las categorías
+    </SelectItem>
+
+    <SelectItem value="electrónica" className="focus:bg-zinc-700">
+      Electrónica
+    </SelectItem>
+
+    <SelectItem value="ropa" className="focus:bg-zinc-700">
+      Ropa
+    </SelectItem>
+
+    <SelectItem value="hogar" className="focus:bg-zinc-700">
+      Hogar
+    </SelectItem>
+
+    <SelectItem value="deportes" className="focus:bg-zinc-700">
+      Deportes
+    </SelectItem>
+
+    <SelectItem value="libros" className="focus:bg-zinc-700">
+      Libros
+    </SelectItem>
+  </SelectContent>
+</Select>
       <label htmlFor="price" className="block font-semibold mb-2">
         Filtrar por precio:
       </label>
       <div className="flex gap-4 mb-6">
-        
         <input
           type="number"
-            placeholder="Precio mínimo"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="number"
-            placeholder="Precio máximo"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
+          placeholder="Precio mínimo"
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Precio máximo"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
       </div>
       {Number(minPrice) > Number(maxPrice) && (
         <p className="text-red-500 mb-4">
@@ -126,7 +162,7 @@ function ProductosContent() {
       </div>
       <div className="flex items-center mt-8">
         <button
-        aria-label="Página anterior"
+          aria-label="Página anterior"
           onClick={() =>
             setCurrentPage((prev: number) => Math.max(prev - 1, 1))
           }
@@ -135,16 +171,16 @@ function ProductosContent() {
         >
           Anterior
         </button>
+
         <span className="mx-2">
           Página {currentPage} de {totalPages}
         </span>
         <button
-        aria-label="Página siguiente"
-        
+          aria-label="Página siguiente"
           onClick={() =>
             setCurrentPage((prev: number) => Math.min(prev + 1, totalPages))
           }
-          disabled= {currentPage === totalPages}
+          disabled={currentPage === totalPages}
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Siguiente

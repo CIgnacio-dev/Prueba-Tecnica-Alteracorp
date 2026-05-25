@@ -33,7 +33,6 @@ export function ProductCard({
       <p className="capitalize">
         {product.categoria}
       </p>
-
       <p className="font-bold text-xl mt-2">
         {new Intl.NumberFormat("es-CL", {
           style: "currency",

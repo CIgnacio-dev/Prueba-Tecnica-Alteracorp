@@ -26,13 +26,13 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   }
 
   return (
-    <main className="p-6">
+    <main className="bg-gradient-to-r from-gray-700 via-gray-900 to-black p-6 min-h-screen text-white">
       <Link href={from || "/productos"} className="text-blue-500 hover:underline mb-4 inline-block">
         &larr; Volver a productos
       </Link>
       <img src={product.imagen} alt={`Imagen de ${product.nombre}`} className="w-full h-64 object-cover rounded-lg mb-4" />
       <h1 className="text-3xl font-bold mb-2">{product.nombre}</h1>
-      <p className="text-gray-600 mb-4">{product.descripcion}</p>
+      <p className="text-white-600 mb-4">{product.descripcion}</p>
         <p className="font-bold text-xl">
             {new Intl.NumberFormat("es-CL", {
               style: "currency",
